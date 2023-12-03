@@ -1,40 +1,79 @@
+from collections import OrderedDict
+
 calibration_values = list()
 calibration_values_sum = 0
 
+
+number_strings = {
+    "one": "1",
+    "two": "2",
+    "three": "3",
+    "four": "4",
+    "five": "5",
+    "six": "6",
+    "seven": "7",
+    "eight": "8",
+    "nine": "9",
+}
+numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+
 # Open the calibration document
-calibration_document = open("calibration_document.txt", "r")
+calibration_document = open("./day1/calibration_document.txt", "r")
 
-# Read each line from the calibration document
+
+def find_digits(string: str) -> str:
+    locations = OrderedDict()
+
+    # Find all the instances of numbers spelled out with letters in the string
+    for number in number_strings:
+        start = 0
+        while True:
+            location = line.find(number, start)
+            if location >= 0:
+                # Keep track of the spelled out number and its location in the string
+                locations.update({location: number})
+                start = location + len(number)
+            else:
+                break
+
+    # Find all the instances of numbers in the string
+    for number in numbers:
+        start = 0
+        while True:
+            location = line.find(number, start)
+            if location >= 0:
+                # Keep track of the number and its location in the string
+                locations.update({location: number})
+                start = location + len(number)
+            else:
+                break
+
+    # Sort the locations so we know which number or number spelled out is first
+    locations = OrderedDict(sorted(locations.items(), key=lambda t: t[0]))
+
+    first = locations[next(iter(locations))]
+    if first.isdigit():
+        first_digit = first
+    else:
+        first_digit = number_strings[first]
+
+    last = locations[next(reversed(locations))]
+    if last.isdigit():
+        last_digit = last
+    else:
+        last_digit = number_strings[last]
+
+    calibration_value = int(f"{first_digit}{last_digit}")
+
+    return calibration_value
+
+
 for line in calibration_document:
-    print(line.find("one"))
-    if "one" in line:
-        print(f"we found a 'one'")
-
-
-
-    # Inspect each character in the line
-    first_digit_found = False
-    for char in line:
-        if char.isdigit():
-            if first_digit_found == False:    
-                # When the first number is found create a 2 digit calibration 
-                # value using the first digit
-                first_digit = char
-                first_digit_found = True
-
-            # If another number is found replace the second digit of the 
-            # calibration value with the number
-            second_digit = char    
-    
-    # After all the characters of the line from the calibration document have 
-    # been inspected add the 2 digit calibration value to a list
-    calibration_value = int(f"{first_digit}{second_digit}")
-    print(f"calibration value is {calibration_value}")
+    line = line.strip()
+    calibration_value = find_digits(line)
     calibration_values.append(calibration_value)
 
-# After all lines from the calibration document have been processed create a 
-# sum of all the calibration values
 for value in calibration_values:
     calibration_values_sum += value
 
-print(calibration_values_sum)
+print(f"\nSum of all the calibration values is: {calibration_values_sum}")
