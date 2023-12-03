@@ -66,7 +66,7 @@ def parse_game(game: str):
     return game_id_number, game_sets
 
 
-# Open the calibration document
+# Open the games document
 games = open("./day2/games.txt", "r")
 game_id_number_sum = 0
 game_power_sum = 0
